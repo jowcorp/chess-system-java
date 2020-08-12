@@ -4,7 +4,6 @@ import static chess.Color.BLACK;
 import static chess.Color.WHITE;
 
 import boardgame.Board;
-import boardgame.Position;
 import chess.pieces.King;
 import chess.pieces.Rook;
 
@@ -27,9 +26,13 @@ public class ChessMatch {
 		return mat;
 	}
 	
+	private void placingNewPiece(char column, int row, ChessPiece piece) {
+		board.placePiece(piece, new ChessPosition(column, row).toPosition());
+	}
+	
 	private void initialSetup() {
-		board.placePiece(new Rook(this.board, WHITE), new Position(2, 1));
-		board.placePiece(new King(this.board, BLACK), new Position(0, 4));
-		board.placePiece(new King(this.board, WHITE), new Position(7, 4));
+		this.placingNewPiece('b', 6, new Rook(this.board, WHITE));
+		this.placingNewPiece('e', 8, new King(this.board, BLACK));
+		this.placingNewPiece('e', 1, new King(this.board, WHITE));
 	}
 }
