@@ -65,4 +65,15 @@ public class Board {
 		return this.getPiece(position) != null;
 	}
 	
+	public Piece removePiece(Position position) {
+		this.checkisValidPositionForPiece(position.getRow(), position.getColumn());
+		if (this.getPiece(position) == null) {
+			return null;
+		}
+		Piece aux = this.getPiece(position);
+		aux.position = null;
+		pieces[position.getRow()][position.getColumn()] = null;
+		return aux;
+	}
+	
 }

@@ -1,9 +1,8 @@
 package chess;
 
-import static chess.Color.BLACK;
-import static chess.Color.WHITE;
-
 import boardgame.Board;
+import boardgame.Piece;
+import boardgame.Position;
 import chess.pieces.King;
 import chess.pieces.Rook;
 
@@ -26,13 +25,44 @@ public class ChessMatch {
 		return mat;
 	}
 	
-	private void placingNewPiece(char column, int row, ChessPiece piece) {
+	private void placeNewPiece(char column, int row, ChessPiece piece) {
 		board.placePiece(piece, new ChessPosition(column, row).toPosition());
 	}
 	
 	private void initialSetup() {
-		this.placingNewPiece('b', 6, new Rook(this.board, WHITE));
-		this.placingNewPiece('e', 8, new King(this.board, BLACK));
-		this.placingNewPiece('e', 1, new King(this.board, WHITE));
+		this.placeNewPiece('c', 1, new Rook(board, Color.WHITE));
+		this.placeNewPiece('c', 2, new Rook(board, Color.WHITE));
+		this.placeNewPiece('d', 2, new Rook(board, Color.WHITE));
+		this.placeNewPiece('e', 2, new Rook(board, Color.WHITE));
+		this.placeNewPiece('e', 1, new Rook(board, Color.WHITE));
+		this.placeNewPiece('d', 1, new King(board, Color.WHITE));
+
+		this.placeNewPiece('c', 7, new Rook(board, Color.BLACK));
+		this.placeNewPiece('c', 8, new Rook(board, Color.BLACK));
+		this.placeNewPiece('d', 7, new Rook(board, Color.BLACK));
+		this.placeNewPiece('e', 7, new Rook(board, Color.BLACK));
+		this.placeNewPiece('e', 8, new Rook(board, Color.BLACK));
+		this.placeNewPiece('d', 8, new King(board, Color.BLACK));
+	}
+	
+	public ChessPiece performChessMove(ChessPosition sourcePos, ChessPosition targetPos) {
+		Position source = sourcePos.toPosition();
+		Position target = targetPos.toPosition();
+		validateSourcePosition(source);
+		Piece capturedPiece = makeMove(source, target);
+		return (ChessPiece) capturedPiece;
+	}
+	
+	private void validateSourcePosition(Position position) {
+		if (!board.thereIsAPiece(position)) {
+			throw new ChessException("Não existe peça na posição de origem.");
+		}
+	}
+	
+	private Piece makeMove(Position source, Position target) {
+		Piece p = board.removePiece(source);
+		Piece capturedPiece = board.removePiece(target);
+		board.placePiece(p, target);
+		return capturedPiece;
 	}
 }
