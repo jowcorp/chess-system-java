@@ -1,14 +1,19 @@
 package application;
 
+import static chess.Color.BLACK;
 import static chess.Color.WHITE;
 import static java.lang.Integer.parseInt;
 
+import java.util.Arrays;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 import chess.ChessMatch;
 import chess.ChessPiece;
 import chess.ChessPosition;
+import chess.Color;
 
 public class UI {
 	
@@ -93,11 +98,29 @@ public class UI {
 		System.out.print("  a b c d e f g h");
 	}
 	
-	public static void printMatch(ChessMatch chessMatch) {
+	public static void printMatch(ChessMatch chessMatch, List<ChessPiece> capturedPieces) {
 		printBoard(chessMatch.getPieces());
+		System.out.println();
+		printCapturedPieces(capturedPieces);
+		System.out.println();
 		System.out.println();
 		System.out.println("Turno: " + chessMatch.getTurn());
 		System.out.println("Jogador atual: " + chessMatch.getCurrentPlayer());
+	}
+	
+	public static void printCapturedPieces(List<ChessPiece> capturedPieces) {
+		List<ChessPiece> whitePieces = capturedPieces.stream().filter(x -> WHITE.equals(x.getColor())).collect(Collectors.toList());
+		List<ChessPiece> blackPieces = capturedPieces.stream().filter(x -> BLACK.equals(x.getColor())).collect(Collectors.toList());
+		System.out.println("Peças capturadas:");
+		System.out.print("Brancas: ");
+		System.out.print(ANSI_WHITE);
+		System.out.print(Arrays.toString(whitePieces.toArray()));
+		System.out.print(ANSI_RESET);
+		System.out.println();
+		System.out.print("Pretas: ");
+		System.out.print(ANSI_RED);
+		System.out.print(Arrays.toString(blackPieces.toArray()));
+		System.out.print(ANSI_RESET);
 	}
 	
 }
