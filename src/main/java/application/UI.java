@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 import chess.ChessMatch;
 import chess.ChessPiece;
 import chess.ChessPosition;
-import chess.Color;
 
 public class UI {
 	
@@ -106,6 +105,9 @@ public class UI {
 		System.out.println();
 		System.out.println("Turno: " + chessMatch.getTurn());
 		System.out.println("Jogador atual: " + chessMatch.getCurrentPlayer());
+		if (chessMatch.isCheck()) {
+			System.out.println("XEQUE!");
+		}
 	}
 	
 	public static void printCapturedPieces(List<ChessPiece> capturedPieces) {
