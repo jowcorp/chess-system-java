@@ -104,9 +104,14 @@ public class UI {
 		System.out.println();
 		System.out.println();
 		System.out.println("Turno: " + chessMatch.getTurn());
-		System.out.println("Jogador atual: " + chessMatch.getCurrentPlayer());
-		if (chessMatch.isCheck()) {
-			System.out.println("XEQUE!");
+		if (!chessMatch.isCheckmate()) {
+			System.out.println("Jogador atual: " + chessMatch.getCurrentPlayer());
+			if (chessMatch.isCheck()) {
+				System.out.println("XEQUE!");
+			}
+		} else {
+			System.out.println("XEQUE-MATE!");
+			System.out.println("O vencedor é: " + chessMatch.getCurrentPlayer());
 		}
 	}
 	

@@ -27,11 +27,17 @@ public class ChessMatch {
 	
 	private boolean check;
 	
+	private boolean checkmate;
+	
 	public ChessMatch() {
 		this.board = new Board(8, 8);
 		this.turn = 1;
 		this.currentPlayer = WHITE;
 		this.initialSetup();
+	}
+	
+	public boolean isCheckmate() {
+		return checkmate;
 	}
 	
 	public int getTurn() {
@@ -73,15 +79,38 @@ public class ChessMatch {
 	private boolean testCheck(Color color) {
 		Position kingPosition = this.getKing(color).getChessPosition().toPosition();
 		List<Piece> opponentPieces = this.piecesOnBoard.stream().filter(x ->((ChessPiece) x).getColor() == getOpponentColor(color)).collect(Collectors.toList());
-		int i = 0;
 		for (Piece p : opponentPieces) {
 			boolean[][] mat = p.possibleMoves();
 			if (mat[kingPosition.getRow()][kingPosition.getColumn()]) {
 				return true;
 			}
-			i++;
 		}
 		return false;
+	}
+	
+	private boolean testCheckmate(Color color) {
+		if (!this.testCheck(color)) {
+			return false;
+		}
+		List<Piece> pieces = this.piecesOnBoard.stream().filter(x ->((ChessPiece) x).getColor() == color).collect(Collectors.toList());
+		for (Piece p : pieces) {
+			boolean[][] mat = p.possibleMoves();
+			for (int i=0; i<board.getRows(); i++) {
+				for (int j=0; j<board.getColumns(); j++) {
+					if (mat[i][j]) {
+						Position source = ((ChessPiece)p).getChessPosition().toPosition();
+						Position target = new Position(i, j);
+						Piece capturedPiece = this.makeMove(source, target);
+						boolean check = this.testCheck(color);
+						undoMove(source, target, capturedPiece);
+						if (!check) {
+							return false;
+						}
+					}
+				}
+			}
+		}
+		return true;
 	}
 	
 	private void placeNewPiece(char column, int row, ChessPiece piece) {
@@ -117,9 +146,14 @@ public class ChessMatch {
 			throw new ChessException("Você não pode se colocar em xeque.");
 		}
 		
-		this.check = this.testCheck(getOpponentColor(currentPlayer));
+		this.check = this.testCheck(this.getOpponentColor(currentPlayer));
 		
-		this.nextTurn();
+		if (this.testCheckmate(this.getOpponentColor(currentPlayer))) {
+			this.checkmate = true;
+		} else {
+			this.nextTurn();
+		}
+		
 		return (ChessPiece) capturedPiece;
 	}
 	
