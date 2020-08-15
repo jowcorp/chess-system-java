@@ -220,7 +220,7 @@ public class ChessMatch {
 			throw new IllegalArgumentException("Não há peça a ser promovida.");
 		}
 		if (!"B".equalsIgnoreCase(type) && !"N".equalsIgnoreCase(type) && !"R".equalsIgnoreCase(type) && !"Q".equalsIgnoreCase(type)) {
-			throw new InvalidParameterException("Tipo de promoção inválida.");
+			return promoted;
 		}
 		Position pos = promoted.getChessPosition().toPosition();
 		Piece p = this.board.removePiece(pos);
