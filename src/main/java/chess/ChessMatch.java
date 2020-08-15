@@ -3,6 +3,7 @@ package chess;
 import static chess.Color.BLACK;
 import static chess.Color.WHITE;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,6 +36,8 @@ public class ChessMatch {
 	
 	private ChessPiece enPassantVulnerable;
 	
+	private ChessPiece promoted;
+	
 	public ChessMatch() {
 		this.board = new Board(8, 8);
 		this.turn = 1;
@@ -60,6 +63,12 @@ public class ChessMatch {
 	
 	public ChessPiece getEnPassantVulnerable() {
 		return enPassantVulnerable;
+	}
+	
+	
+
+	public ChessPiece getPromoted() {
+		return promoted;
 	}
 
 	public ChessPiece[][] getPieces() {
@@ -178,6 +187,16 @@ public class ChessMatch {
 		
 		ChessPiece movedPiece = (ChessPiece) this.board.getPiece(target);
 		
+		// Promoção de Peão
+		promoted = null;
+		if (movedPiece instanceof Pawn) {
+			if ((Color.WHITE.equals(movedPiece.getColor()) && target.getRow() == 0)
+				|| (Color.BLACK.equals(movedPiece.getColor()) && target.getRow() == 7)) {
+				promoted = (ChessPiece) this.board.getPiece(target);
+				promoted = replacePromotedPiece("Q");
+			}
+		}
+		
 		this.check = this.testCheck(this.getOpponentColor(currentPlayer));
 		
 		if (this.testCheckmate(this.getOpponentColor(currentPlayer))) {
@@ -196,6 +215,40 @@ public class ChessMatch {
 		return (ChessPiece) capturedPiece;
 	}
 	
+	public ChessPiece replacePromotedPiece(String type) {
+		if (promoted == null) {
+			throw new IllegalArgumentException("Não há peça a ser promovida.");
+		}
+		if (!"B".equalsIgnoreCase(type) && !"N".equalsIgnoreCase(type) && !"R".equalsIgnoreCase(type) && !"Q".equalsIgnoreCase(type)) {
+			throw new InvalidParameterException("Tipo de promoção inválida.");
+		}
+		Position pos = promoted.getChessPosition().toPosition();
+		Piece p = this.board.removePiece(pos);
+		this.piecesOnBoard.remove(p);
+		
+		ChessPiece newPiece = this.newPiece(type, promoted.getColor());
+		this.board.placePiece(newPiece, pos);
+		this.piecesOnBoard.add(newPiece);
+		
+		return newPiece;
+	}
+	
+	private ChessPiece newPiece(String type, Color color) {
+		switch (type.toUpperCase()) {
+		case "B":
+			return new Bishop(this.board, promoted.getColor());
+		
+		case "N":
+			return new Knight(this.board, promoted.getColor());
+		
+		case "R":
+			return new Rook(this.board, promoted.getColor());
+		
+		default:
+			return new Queen(this.board, promoted.getColor());
+		}
+	}
+
 	private void validateSourcePosition(Position position) {
 		if (!board.thereIsAPiece(position)) {
 			throw new ChessException("Não existe peça na posição de origem.");
@@ -294,7 +347,7 @@ public class ChessMatch {
 		if (p instanceof Pawn) {
 			// Se o Peão andou na diagonal e não capturou nenhuma peça, ele realizou um en passant
 			if (source.getColumn() != target.getColumn() && capturedPiece == this.enPassantVulnerable) {
-				ChessPiece pawn = (ChessPiece) this.board.removePiece(target));
+				ChessPiece pawn = (ChessPiece) this.board.removePiece(target);
 				Position pawnPosition;
 				if (Color.WHITE.equals(p.getColor())) {
 					pawnPosition = new Position(3, target.getColumn());

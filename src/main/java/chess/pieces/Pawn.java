@@ -3,7 +3,6 @@ package chess.pieces;
 import static chess.Color.WHITE;
 
 import boardgame.Board;
-import boardgame.Piece;
 import boardgame.Position;
 import chess.ChessMatch;
 import chess.ChessPiece;
